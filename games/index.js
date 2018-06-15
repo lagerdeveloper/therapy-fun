@@ -1,4 +1,5 @@
 import Addition from './Addition';
+import FaceMatching from './FaceMatching';
 
 const games = [
   {
@@ -7,6 +8,13 @@ const games = [
     category: 'Arithmetic',
     image_source: require('./Addition/addition.jpg'),
     game: Addition,
+  },
+  {
+    id: 2,
+    name: 'Face Matching',
+    category: 'Visual Memory',
+    image_source: require('./FaceMatching/face-matching.jpg'),
+    game: FaceMatching,
   },
 ];
 

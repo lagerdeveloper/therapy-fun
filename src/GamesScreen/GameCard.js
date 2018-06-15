@@ -19,10 +19,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#edeeef',
     backgroundColor: 'white',
+    marginBottom: 10,
   },
   name: {
     fontSize: 20,
     color: '#000',
+    padding: 10,
   },
   image: {
     width: 348,
