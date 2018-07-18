@@ -1,20 +1,20 @@
-import Addition from './Addition';
-import FaceMatching from './FaceMatching';
+import Sudoku from './Sudoku';
+import ImageMatching from './ImageMatching';
 
 const games = [
   {
     id: 1,
-    name: 'Addition',
+    name: 'Sudoku',
     category: 'Arithmetic',
-    image_source: require('./Addition/addition.jpg'),
-    game: Addition,
+    image_source: require('./Sudoku/sudoku.jpg'),
+    game: Sudoku,
   },
   {
     id: 2,
-    name: 'Face Matching',
+    name: 'Image Matching',
     category: 'Visual Memory',
-    image_source: require('./FaceMatching/face-matching.jpg'),
-    game: FaceMatching,
+    image_source: require('./ImageMatching/face-matching.jpg'),
+    game: ImageMatching,
   },
 ];
 

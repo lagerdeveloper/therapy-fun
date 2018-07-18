@@ -30,8 +30,11 @@ export default class GamesScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     flex: 1,
     marginTop: 10,
-    alignItems: 'center',
   },
 });

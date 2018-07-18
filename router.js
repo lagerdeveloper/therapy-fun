@@ -6,7 +6,7 @@ import SearchScreen from './src/SearchScreen';
 import MyPlanScreen from './src/MyPlanScreen';
 import AccountScreen from './src/AccountScreen';
 import CategoryScreen from './src/CategoryScreen';
-import GameScreen from './src/GameScreen';
+import GameWrapperScreen from './src/GameWrapperScreen';
 
 const GamesStack = createStackNavigator({
   Games: GamesScreen,
@@ -58,7 +58,7 @@ const MainTabNavigator = createBottomTabNavigator({
 
 const RootStack = createStackNavigator({
   Main: MainTabNavigator,
-  Game: GameScreen,
+  Game: GameWrapperScreen,
 }, {
   headerMode: 'none',
 });
