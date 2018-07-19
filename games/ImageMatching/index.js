@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, PickerIOS, Button } from 'react-native';
+import { View, Text, StyleSheet, Picker, Button } from 'react-native';
+import GameBoard from './GameBoard';
+import GameMenu from './GameMenu';
 
 //NOTE these levels will be extracted from ajax request or redux store
 const levels = [
@@ -24,9 +26,9 @@ const levels = [
 export default class ImageMatching extends Component {
   constructor(props) {
     super(props);
-    this.renderMenu = this.renderMenu.bind(this);
     this._playGame = this._playGame.bind(this);
     this._goToMenu = this._goToMenu.bind(this);
+    this._chooseDifficultyLevel = this._chooseDifficultyLevel.bind(this);
     this.state = {
       screen: 0,
       difficultyLevel: 1,
@@ -41,36 +43,27 @@ export default class ImageMatching extends Component {
     this.setState({ screen: 0 });
   }
 
-  renderMenu() {
-    return (
-      <View style={styles.container}>
-        <View style={{ width: '80%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D0D0D0' }}>
-          <Text style={styles.pickerLabel}>Select Difficulty Level</Text>
-        </View>
-        <PickerIOS
-          selectedValue={this.state.difficultyLevel}
-          style={styles.picker}
-          itemStyle={styles.pickerItem}
-          onValueChange={level => this.setState({difficultyLevel: level})}>
-          { levels.map((level, i) => <PickerIOS.Item key={i} label={level.label} value={level.label} />) }
-        </PickerIOS>
-        <Button style={styles.button} title="Play Game" onPress={this._playGame}/>
-      </View>
-    );
+  _chooseDifficultyLevel(level) {
+    this.setState({ difficultyLevel: level });
   }
-
 
   render() {
     if (this.state.screen === 0) {
-      return this.renderMenu()
+      return (
+        <GameMenu
+          difficultyLevels={levels}
+          difficultyLevel={this.state.difficultyLevel}
+          playGame={this._playGame}
+          chooseDifficultyLevel={this._chooseDifficultyLevel}
+        />
+      );
     } else {
       return (
-        <View style={styles.container}>
-          <Button style={styles.button} title='Menu' onPress={this._goToMenu} />
-          <Button style={styles.button} title='Quit' onPress={() => this.props.navigation.goBack()} />
-          <Text>Image Matching Game Code</Text>
-          <Text>Game Board Goes Here</Text>
-        </View>
+        <GameBoard
+          difficultyLevel={this.state.difficultyLevel}
+          goToMenu={this._goToMenu}
+          navigation={this.props.navigation}
+        />
       );
     }
   }
@@ -81,6 +74,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  gameTitle: {
+    fontSize: 50,
+    marginBottom: '50%',
   },
   button: {
     width: '80%',
