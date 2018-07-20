@@ -4,63 +4,80 @@ import GameBoard from './GameBoard';
 import GameMenu from './GameMenu';
 
 //NOTE these levels will be extracted from ajax request or redux store
+//NOTE use DifficultyLevel class to represent the value objects
 const levels = [
   {
-    label: '1',
-    value: 1,
+    id: 1,
+    numRows: 2,
+    numCols: 3,
+    memTime: 1500,
   },
   {
-    label: '2',
-    value: 2,
+    id: 2,
+    numRows: 2,
+    numCols: 3,
+    memTime: 1500,
   },
   {
-    label: '3',
-    value: 3,
+    id: 3,
+    numRows: 2,
+    numCols: 3,
+    memTime: 1500,
   },
   {
-    label: '4',
-    value: 4,
+    id: 4,
+    numRows: 2,
+    numCols: 3,
+    memTime: 1500,
   },
-]
+  {
+    id: 5,
+    numRows: 2,
+    numCols: 3,
+    memTime: 1500,
+  }
+];
 
 export default class ImageMatching extends Component {
   constructor(props) {
     super(props);
     this._playGame = this._playGame.bind(this);
     this._goToMenu = this._goToMenu.bind(this);
-    this._chooseDifficultyLevel = this._chooseDifficultyLevel.bind(this);
+    this._chooseLevel = this._chooseLevel.bind(this);
     this.state = {
-      screen: 0,
-      difficultyLevel: 1,
+      screen: 'menu',
+      currentLevelID: 1,
+      levels: levels,
     }
   }
 
   _playGame() {
-    this.setState({ screen: 1 });
+    this.setState({ screen: 'gameBoard' });
   }
 
   _goToMenu() {
-    this.setState({ screen: 0 });
+    this.setState({ screen: 'menu' });
   }
 
-  _chooseDifficultyLevel(level) {
-    this.setState({ difficultyLevel: level });
+  _chooseLevel(levelID) {
+    this.setState({ currentLevelID: levelID });
   }
 
   render() {
-    if (this.state.screen === 0) {
+    const { screen, currentLevelID, levels } = this.state;
+    if (screen === 'menu') {
       return (
         <GameMenu
-          difficultyLevels={levels}
-          difficultyLevel={this.state.difficultyLevel}
+          levels={levels}
+          currentLevelID={currentLevelID}
           playGame={this._playGame}
-          chooseDifficultyLevel={this._chooseDifficultyLevel}
+          chooseLevel={this._chooseLevel}
         />
       );
     } else {
       return (
         <GameBoard
-          difficultyLevel={this.state.difficultyLevel}
+          currentLevel={levels.find(level => level.id === currentLevelID)}
           goToMenu={this._goToMenu}
           navigation={this.props.navigation}
         />

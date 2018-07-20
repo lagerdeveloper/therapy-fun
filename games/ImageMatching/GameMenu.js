@@ -8,7 +8,7 @@ export default class GameMenu extends Component {
   }
 
   render() {
-    const { difficultyLevel, chooseDifficultyLevel, difficultyLevels, playGame } = this.props;
+    const { currentLevelID, chooseLevel, levels, playGame } = this.props;
     return (
       <View style={styles.container}>
         <Text style={styles.gameTitle}>Welcome to Image Matching</Text>
@@ -17,11 +17,11 @@ export default class GameMenu extends Component {
             <Text style={styles.pickerLabel}>Select Difficulty Level</Text>
           </View>
           <Picker
-            selectedValue={difficultyLevel}
+            selectedValue={currentLevelID}
             style={styles.picker}
             itemStyle={styles.pickerItem}
-            onValueChange={level => chooseDifficultyLevel(level)}>
-            { difficultyLevels.map((level, i) => <Picker.Item key={i} label={level.label} value={level.label} />) }
+            onValueChange={levelID => chooseLevel(levelID)}>
+            { levels.map((level, i) => <Picker.Item key={i} label={`${level.id}`} value={level.id} />) }
           </Picker>
           <Button style={styles.button} title="Play Game" onPress={playGame}/>
         </View>
