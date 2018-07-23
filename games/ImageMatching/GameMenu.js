@@ -24,7 +24,7 @@ export default class GameMenu extends Component {
             onValueChange={levelID => chooseLevel(levelID)}>
             { levels.map((level, i) => <Picker.Item key={i} label={`${level.id}`} value={level.id} />) }
           </Picker>
-          <Button containerViewStyle={styles.button} backgroundColor="rgb(43,151,219)" title="Play Game" onPress={playGame}/>
+          <Button containerViewStyle={styles.button} backgroundColor="rgb(43,151,219)" title={`Play Level ${currentLevelID}`} onPress={playGame}/>
           <Button containerViewStyle={styles.button} title="Exit" onPress={() => navigation.goBack()} />
         </View>
       </View>
