@@ -8,7 +8,7 @@ export default class GameControls extends Component {
       <View style={styles.container}>
         <Button style={styles.button} title='Menu' onPress={goToMenu} />
         <Button style={styles.button} title='Quit' onPress={() => navigation.goBack()} />
-        <Text>Difficulty Level: {currentLevel.id}</Text>
+        <Text>Level: {currentLevel.id}</Text>
         <Text>Number of Rows: {currentLevel.numRows}</Text>
         <Text>Number of Columns: {currentLevel.numCols}</Text>
       </View>
@@ -19,6 +19,7 @@ export default class GameControls extends Component {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    paddingTop: 50,
     alignItems: 'center',
   },
   button: {

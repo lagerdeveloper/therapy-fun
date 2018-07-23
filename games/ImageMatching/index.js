@@ -10,13 +10,13 @@ const levels = [
     id: 1,
     numRows: 2,
     numCols: 3,
-    memTime: 1500,
+    memTime: 2000,
   },
   {
     id: 2,
     numRows: 2,
-    numCols: 3,
-    memTime: 1500,
+    numCols: 4,
+    memTime: 1000,
   },
   {
     id: 3,
@@ -72,6 +72,7 @@ export default class ImageMatching extends Component {
           currentLevelID={currentLevelID}
           playGame={this._playGame}
           chooseLevel={this._chooseLevel}
+          navigation={this.props.navigation}
         />
       );
     } else {
