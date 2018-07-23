@@ -53,12 +53,8 @@ export default class GameBoard extends Component {
 
   //CORE GAME LOGIC
   onImageCardPress(card) {
-    console.log(`Clicked Card: ${card}`);
     const { selectedCards, matchedCards, preventPresses } = this.state;
-    console.log(selectedCards);
-    console.log(matchedCards);
     const { currentLevel: { memTime } } = this.props;
-    console.log(memTime);
     if (!card.faceUp && !preventPresses) {
       const newSelectedCards = [...selectedCards, card];
       card.faceUp = true;
@@ -86,7 +82,6 @@ export default class GameBoard extends Component {
   }
 
   componentWillUnmount() {
-    console.log('Timer cleared!');
     clearTimeout(this.state.noMatchTimer);
   }
 
