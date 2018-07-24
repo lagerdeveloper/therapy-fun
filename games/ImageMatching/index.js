@@ -1,7 +1,9 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, Picker, Button } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Asset } from 'expo';
 import GameBoard from './GameBoard';
 import GameMenu from './GameMenu';
+import { Images, PlaceholderImage } from './Images';
 
 //NOTE these levels will be extracted from ajax request or redux store
 //NOTE use DifficultyLevel class to represent the value objects
@@ -16,25 +18,25 @@ const levels = [
     id: 2,
     numRows: 2,
     numCols: 4,
-    memTime: 1000,
+    memTime: 1500,
   },
   {
     id: 3,
     numRows: 2,
-    numCols: 3,
-    memTime: 1500,
+    numCols: 4,
+    memTime: 1000,
   },
   {
     id: 4,
-    numRows: 2,
-    numCols: 3,
-    memTime: 1500,
+    numRows: 3,
+    numCols: 4,
+    memTime: 750,
   },
   {
     id: 5,
-    numRows: 2,
-    numCols: 3,
-    memTime: 1500,
+    numRows: 3,
+    numCols: 4,
+    memTime: 500,
   }
 ];
 
@@ -44,7 +46,9 @@ export default class ImageMatching extends Component {
     this._playGame = this._playGame.bind(this);
     this._goToMenu = this._goToMenu.bind(this);
     this._chooseLevel = this._chooseLevel.bind(this);
+    this.renderGame = this.renderGame.bind(this);
     this.state = {
+      isGameReady: false,
       screen: 'menu',
       currentLevelID: 1,
       levels: levels,
@@ -63,7 +67,23 @@ export default class ImageMatching extends Component {
     this.setState({ currentLevelID: levelID });
   }
 
-  render() {
+  _loadResourcesAsync = async() => {
+    try {
+      await Asset.loadAsync([...Images, PlaceholderImage ]);
+    } catch (e) {
+      console.log(`Image Matching failed to load assets.
+                   The game will proceed without cached assets. Please check index.js.`);
+      consol.log(e);
+    } finally {
+      this.setState({ isGameReady: true });
+    }
+  }
+
+  componentDidMount() {
+    this._loadResourcesAsync();
+  }
+
+  renderGame() {
     const { screen, currentLevelID, levels } = this.state;
     if (screen === 'menu') {
       return (
@@ -85,34 +105,27 @@ export default class ImageMatching extends Component {
       );
     }
   }
+
+  render() {
+    const { isGameReady } = this.state;
+    if (isGameReady) {
+      return this.renderGame();
+    } else {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color='white'/>
+        </View>
+      )
+    }
+  }
 };
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  gameTitle: {
-    fontSize: 50,
-    marginBottom: '50%',
-  },
-  button: {
-    width: '80%',
-    height: 50,
-  },
-  picker: {
-    height: 100,
-    width: '80%',
-    backgroundColor: '#fff',
-    borderColor: 'black',
-  },
-  pickerLabel: {
-    fontSize: 20,
-  },
-  pickerItem: {
-    height: 100,
-    borderTopWidth: 1,
-    borderColor: 'black',
+    backgroundColor: 'rgb(43,151,219)',
   }
 });

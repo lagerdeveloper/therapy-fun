@@ -1,29 +1,28 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Header } from 'react-native-elements';
 
 export default class GameControls extends Component {
   render() {
     const { currentLevel, goToMenu, navigation } = this.props;
     return (
-      <View style={styles.container}>
-        <Button style={styles.button} title='Menu' onPress={goToMenu} />
-        <Button style={styles.button} title='Quit' onPress={() => navigation.goBack()} />
-        <Text>Level: {currentLevel.id}</Text>
-        <Text>Number of Rows: {currentLevel.numRows}</Text>
-        <Text>Number of Columns: {currentLevel.numCols}</Text>
-      </View>
+      <Header innerContainerStyles={{ marginTop: 10 }} outerContainerStyles={{ backgroundColor: 'rgb(43,151,219)' }}>
+        <TouchableOpacity onPress={goToMenu}>
+          <Ionicons name='md-home' color='white' size={24} />
+        </TouchableOpacity>
+        <Text style={styles.level}>Level {currentLevel.id}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name='md-arrow-forward' color='white' size={24} />
+        </TouchableOpacity>
+      </Header>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    paddingTop: 50,
-    alignItems: 'center',
+  level: {
+    color: 'white',
+    fontSize: 24,
   },
-  button: {
-    width: '20%',
-    height: 50,
-  }
 });
