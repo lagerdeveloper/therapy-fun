@@ -154,7 +154,10 @@ function shuffle(array) {
 
 const styles = StyleSheet.create({
   boardGridContainer: {
-    margin: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    marginLeft: 15,
+    marginRight: 15,
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -7,18 +7,25 @@ export default class GameControls extends Component {
   render() {
     const { currentLevel, goToMenu, navigation } = this.props;
     return (
-      <Header innerContainerStyles={{ marginTop: 10 }} outerContainerStyles={{ backgroundColor: 'rgb(43,151,219)' }}>
-        <TouchableOpacity onPress={goToMenu}>
-          <Ionicons name='md-home' color='white' size={24} />
-        </TouchableOpacity>
-        <Text style={styles.level}>Level {currentLevel.id}</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name='md-arrow-forward' color='white' size={24} />
-        </TouchableOpacity>
-      </Header>
+      <Header
+        innerContainerStyles={{ marginTop: 10 }}
+        outerContainerStyles={{ backgroundColor: 'rgb(43,151,219)' }}
+        leftComponent={<LeftComponent goToMenu={goToMenu} />}
+        centerComponent={<CenterComponent currentLevel={currentLevel} />}
+      />
     );
   }
 }
+
+const LeftComponent = (props) => {
+  return (
+    <TouchableOpacity onPress={props.goToMenu}>
+      <Ionicons name='md-home' color='white' size={24} />
+    </TouchableOpacity>
+  );
+};
+
+const CenterComponent = (props) => <Text style={styles.level}> Level {props.currentLevel.id}</Text>;
 
 const styles = StyleSheet.create({
   level: {
