@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
 import { Asset } from 'expo';
 import GameBoard from './GameBoard';
 import GameMenu from './GameMenu';
@@ -17,12 +17,12 @@ const levels = [
   {
     id: 2,
     numRows: 2,
-    numCols: 4,
+    numCols: 3,
     memTime: 1500,
   },
   {
     id: 3,
-    numRows: 2,
+    numRows: 3,
     numCols: 4,
     memTime: 1000,
   },
@@ -34,7 +34,7 @@ const levels = [
   },
   {
     id: 5,
-    numRows: 3,
+    numRows: 4,
     numCols: 4,
     memTime: 500,
   }
@@ -69,7 +69,8 @@ export default class ImageMatching extends Component {
 
   _loadResourcesAsync = async() => {
     try {
-      await Asset.loadAsync([...Images, PlaceholderImage ]);
+      await Asset.loadAsync([...Images, PlaceholderImage, require('./background.jpg') ]);
+      console.log("cached images");
     } catch (e) {
       console.log(`Image Matching failed to load assets.
                    The game will proceed without cached assets. Please check index.js.`);
@@ -87,19 +88,26 @@ export default class ImageMatching extends Component {
     const { screen, currentLevelID, levels } = this.state;
     if (screen === 'menu') {
       return (
-        <GameMenu
-          levels={levels}
-          currentLevelID={currentLevelID}
-          playGame={this._playGame}
-          chooseLevel={this._chooseLevel}
-          navigation={this.props.navigation}
-        />
+        <Fragment>
+          <ImageBackground style={styles.backgroundImage} source={require('./background.jpg')}>
+            <View style={styles.backgroundImageOverlay} />
+          </ImageBackground>
+          <GameMenu
+            levels={levels}
+            currentLevelID={currentLevelID}
+            playGame={this._playGame}
+            chooseLevel={this._chooseLevel}
+            navigation={this.props.navigation}
+          />
+        </Fragment>
       );
     } else {
       return (
         <GameBoard
           currentLevel={levels.find(level => level.id === currentLevelID)}
+          numLevels={levels.length}
           goToMenu={this._goToMenu}
+          chooseLevel={this._chooseLevel}
           navigation={this.props.navigation}
         />
       );
@@ -127,5 +135,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgb(43,151,219)',
-  }
+  },
+  backgroundImageOverlay: {
+    position: 'absolute',
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'black',
+    opacity: 0.2,
+  },
+  backgroundImage: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+  },
 });

@@ -12,7 +12,7 @@ export default class GameMenu extends Component {
     const { currentLevelID, chooseLevel, levels, playGame, navigation } = this.props;
     return (
       <View style={styles.container}>
-        <Text style={styles.gameTitle}>Welcome to Image Matching</Text>
+        <Text style={styles.gameTitle}>Image Matching</Text>
         <View style={styles.menuContainer}>
           <View style={{ width: '80%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D0D0D0' }}>
             <Text style={styles.pickerLabel}>Select Level</Text>
@@ -24,8 +24,8 @@ export default class GameMenu extends Component {
             onValueChange={levelID => chooseLevel(levelID)}>
             { levels.map((level, i) => <Picker.Item key={i} label={`${level.id}`} value={level.id} />) }
           </Picker>
-          <Button containerViewStyle={styles.button} backgroundColor="rgb(43,151,219)" title={`Play Level ${currentLevelID}`} onPress={playGame}/>
-          <Button containerViewStyle={styles.button} title="Exit" onPress={() => navigation.goBack()} />
+          <Button raised containerViewStyle={styles.button} backgroundColor="#c05649" title={`Play Level ${currentLevelID}`} onPress={playGame}/>
+          <Button raised containerViewStyle={styles.button} backgroundColor="#607a8c" title="Exit" onPress={() => navigation.goBack()} />
         </View>
       </View>
     );
@@ -45,7 +45,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gameTitle: {
-    fontSize: 50,
+    textAlign: 'center',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowColor: 'black',
+    textShadowRadius: 1,
+    shadowOpacity: 0.2,
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 60,
     marginTop: 100,
   },
   button: {

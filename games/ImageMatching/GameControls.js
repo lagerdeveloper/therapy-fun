@@ -5,13 +5,13 @@ import { Header } from 'react-native-elements';
 
 export default class GameControls extends Component {
   render() {
-    const { currentLevel, goToMenu, navigation } = this.props;
+    const { currentLevelID, goToMenu } = this.props;
     return (
       <Header
         innerContainerStyles={{ marginTop: 10 }}
-        outerContainerStyles={{ backgroundColor: 'rgb(43,151,219)' }}
+        outerContainerStyles={{ backgroundColor: '#c05649' }}
         leftComponent={<LeftComponent goToMenu={goToMenu} />}
-        centerComponent={<CenterComponent currentLevel={currentLevel} />}
+        centerComponent={<CenterComponent currentLevelID={currentLevelID} />}
       />
     );
   }
@@ -25,7 +25,7 @@ const LeftComponent = (props) => {
   );
 };
 
-const CenterComponent = (props) => <Text style={styles.level}> Level {props.currentLevel.id}</Text>;
+const CenterComponent = (props) => <Text style={styles.level}> Level {props.currentLevelID}</Text>;
 
 const styles = StyleSheet.create({
   level: {

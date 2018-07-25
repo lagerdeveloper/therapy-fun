@@ -7,6 +7,7 @@ const Images = [
   require('./seal.jpg'),
   require('./tiger.jpg'),
   require('./walrus.jpg'),
+  require('./puppy.jpg'),
 ];
 
 const PlaceholderImage = require('./placeholder.png');

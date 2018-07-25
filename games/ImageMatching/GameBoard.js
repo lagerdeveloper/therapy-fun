@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { Button } from 'react-native-elements';
 import GameControls from './GameControls';
 import { Images, PlaceholderImage } from './Images';
 import { ImageCard, Card } from './ImageCard';
@@ -9,8 +10,12 @@ export default class GameBoard extends Component {
     super(props);
     this.onLayoutChange = this.onLayoutChange.bind(this);
     this.onImageCardPress = this.onImageCardPress.bind(this);
-    const cards = this._buildCards();
+    this.playNextLevel = this.playNextLevel.bind(this);
+    const cards = GameBoard._buildCards(this.props.currentLevel);
     this.state = {
+      currentLevel: this.props.currentLevel,
+      gridHeight: 0,
+      gridWidth: 0,
       cellHeight: 0,
       cellWidth: 0,
       cellMargin: 10,
@@ -19,11 +24,47 @@ export default class GameBoard extends Component {
       matchedCards: [],
       preventPresses: false,
       noMatchTimer: null,
+      showCompleteDialog: false,
+      showCompleteTimer: null,
     };
   }
 
-  _buildCards() {
-    const { currentLevel: { numRows, numCols } } = this.props;
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { currentLevel } = nextProps;
+    if (currentLevel !== prevState.currentLevel) {
+      const { gridHeight, gridWidth, cellMargin } = prevState;
+      const cards = GameBoard._buildCards(currentLevel);
+      const { cellWidth, cellHeight } = GameBoard._getCardDimensions(gridHeight, gridWidth, cellMargin, currentLevel);
+      return {
+        currentLevel: currentLevel,
+        gridHeight: gridHeight,
+        gridWidth: gridWidth,
+        cellHeight: cellHeight,
+        cellWidth: cellWidth,
+        cellMargin: cellMargin,
+        cards: cards,
+        selectedCards: [],
+        matchedCards: [],
+        preventPresses: false,
+        noMatchTimer: null,
+        showCompleteDialog: false,
+        showCompleteTimer: null,
+      };
+    }
+    return null;
+  }
+
+  static _getCardDimensions(boardHeight, boardWidth, cellMargin, currentLevel) {
+    const { numRows, numCols } = currentLevel;
+    const heightMinusMargin = boardHeight - (numRows * cellMargin * 2);
+    const widthMinusMargin = boardWidth - (numCols * cellMargin * 2);
+    const cellWidth = widthMinusMargin / numCols;
+    const cellHeight = heightMinusMargin / numRows;
+    return { cellWidth, cellHeight };
+  }
+
+  static _buildCards(currentLevel) {
+    const { numRows, numCols } = currentLevel;
     // Build array of imageCards
     let cards = [];
     for (let i = 0; i < (numRows*numCols) / 2; i += 0.5) {
@@ -37,14 +78,11 @@ export default class GameBoard extends Component {
   onLayoutChange({ nativeEvent }) {
     const { layout: { width, height } } = nativeEvent;
     const { cellMargin } = this.state;
-    console.log(`Width: ${width}, Height: ${height}`);
-    const { currentLevel: { numRows, numCols } } = this.props;
-    const heightMinusMargin = height - (numRows * cellMargin * 2);
-    const widthMinusMargin = width - (numCols * cellMargin * 2);
-    const cellWidth = widthMinusMargin / numCols;
-    const cellHeight = heightMinusMargin / numRows;
+    const { cellWidth, cellHeight } = GameBoard._getCardDimensions(height, width, cellMargin, this.state.currentLevel);
     console.log(`Cell Width: ${cellWidth}, Cell Height: ${cellHeight}`);
     this.setState({
+      gridHeight: height,
+      gridWidth: width,
       cellHeight,
       cellWidth,
     });
@@ -54,7 +92,7 @@ export default class GameBoard extends Component {
   //CORE GAME LOGIC
   onImageCardPress(card) {
     const { selectedCards, matchedCards, preventPresses } = this.state;
-    const { currentLevel: { memTime } } = this.props;
+    const { currentLevel: { memTime, numRows, numCols } } = this.props;
     if (!card.faceUp && !preventPresses) {
       const newSelectedCards = [...selectedCards, card];
       card.faceUp = true;
@@ -63,6 +101,11 @@ export default class GameBoard extends Component {
         if (newSelectedCards[0].imageID === newSelectedCards[1].imageID) {
           // match
           const newMatchedCards = [...matchedCards, ...newSelectedCards];
+          if (newMatchedCards.length === numRows * numCols) {
+            const showCompleteTimer = setTimeout(() => {
+              this.setState({ showCompleteDialog: true });
+            }, 500);
+          }
           this.setState({ matchedCards: newMatchedCards, selectedCards: [] });
         } else {
           // not match
@@ -81,14 +124,24 @@ export default class GameBoard extends Component {
     }
   }
 
+  playNextLevel() {
+    const { chooseLevel, numLevels } = this.props;
+    const { currentLevel } = this.state;
+    const newLevelID = currentLevel.id + 1;
+    if (newLevelID <= numLevels) {
+      chooseLevel(newLevelID);
+    }
+    this.setState({ showCompleteDialog: false });
+  }
+
   componentWillUnmount() {
     clearTimeout(this.state.noMatchTimer);
+    clearTimeout(this.state.showCompleteTimer);
   }
 
   render() {
-    const { cellHeight, cellWidth, cellMargin, cards, matchedCards } = this.state;
-    const { currentLevel , navigation, goToMenu } = this.props;
-    const { numRows, numCols } = currentLevel;
+    const { cellHeight, cellWidth, cellMargin, cards, matchedCards, showCompleteDialog, currentLevel } = this.state;
+    const { goToMenu } = this.props;
     const gridItemStyle = {
       height: cellHeight,
       width: cellWidth,
@@ -102,7 +155,7 @@ export default class GameBoard extends Component {
     };
     return (
       <Fragment>
-        <GameControls {...this.props} />
+        <GameControls currentLevelID={currentLevel.id} goToMenu={goToMenu} />
         <View style={styles.boardGridContainer} onLayout={this.onLayoutChange}>
           { cards.map(card =>
             <ImageCard
@@ -116,14 +169,20 @@ export default class GameBoard extends Component {
               matched={matchedCards.includes(card)}
             />)}
         </View>
-        {/* <Fragment>
-          <View style={styles.completionOverlay} />
-          <View style={styles.completionDialogContainer}>
-            <View style={styles.completionDialog}>
-              <Text>Dialog Box</Text>
+        { showCompleteDialog &&
+          <Fragment>
+            <View style={styles.completionOverlay} />
+            <View style={styles.completionDialogContainer}>
+              <View style={styles.completionDialog}>
+                <Text style={styles.completionDialogTitle}>Level {currentLevel.id} Complete</Text>
+                <View style={styles.completionDialogButtonsContainer}>
+                  <Button containerViewStyle={styles.button} backgroundColor="rgb(43,151,219)" title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
+                  <Button containerViewStyle={styles.button} title="Menu" onPress={goToMenu} />
+                </View>
+              </View>
             </View>
-          </View>
-        </Fragment> */}
+          </Fragment>
+        }
       </Fragment>
     );
   }
@@ -192,10 +251,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   completionDialog: {
-    width: '60%',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '50%',
     height: '60%',
     backgroundColor: 'white',
-    zIndex: 1,
     opacity: 1,
+    shadowOffset: { width: -3, height: 3 },
+    shadowRadius: 3,
+    elevation: 2,
+    shadowColor: 'black',
+    shadowOpacity: 0.4,
+  },
+  completionDialogButtonsContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  completionDialogTitle: {
+    fontSize: 28,
+  },
+  button: {
+    marginTop: 5,
+    width: '80%',
+    height: 50,
   }
 });
