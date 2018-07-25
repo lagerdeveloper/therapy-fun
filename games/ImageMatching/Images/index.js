@@ -11,5 +11,6 @@ const Images = [
 ];
 
 const PlaceholderImage = require('./placeholder.png');
+const BackgroundImage = require('./background.jpg');
 
-export { Images, PlaceholderImage };
+export { Images, PlaceholderImage, BackgroundImage };

@@ -104,7 +104,7 @@ export default class GameBoard extends Component {
           if (newMatchedCards.length === numRows * numCols) {
             const showCompleteTimer = setTimeout(() => {
               this.setState({ showCompleteDialog: true });
-            }, 500);
+            }, 300);
           }
           this.setState({ matchedCards: newMatchedCards, selectedCards: [] });
         } else {
@@ -176,8 +176,8 @@ export default class GameBoard extends Component {
               <View style={styles.completionDialog}>
                 <Text style={styles.completionDialogTitle}>Level {currentLevel.id} Complete</Text>
                 <View style={styles.completionDialogButtonsContainer}>
-                  <Button containerViewStyle={styles.button} backgroundColor="rgb(43,151,219)" title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
-                  <Button containerViewStyle={styles.button} title="Menu" onPress={goToMenu} />
+                  <Button containerViewStyle={styles.button} backgroundColor="#c05649" title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
+                  <Button containerViewStyle={styles.button} backgroundColor="#607a8c" title="Menu" onPress={goToMenu} />
                 </View>
               </View>
             </View>
@@ -254,8 +254,8 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '50%',
-    height: '60%',
+    width: '70%',
+    height: '40%',
     backgroundColor: 'white',
     opacity: 1,
     shadowOffset: { width: -3, height: 3 },

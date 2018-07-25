@@ -3,7 +3,7 @@ import { View, StyleSheet, ActivityIndicator, ImageBackground } from 'react-nati
 import { Asset } from 'expo';
 import GameBoard from './GameBoard';
 import GameMenu from './GameMenu';
-import { Images, PlaceholderImage } from './Images';
+import { Images, PlaceholderImage, BackgroundImage } from './Images';
 
 //NOTE these levels will be extracted from ajax request or redux store
 //NOTE use DifficultyLevel class to represent the value objects
@@ -69,7 +69,7 @@ export default class ImageMatching extends Component {
 
   _loadResourcesAsync = async() => {
     try {
-      await Asset.loadAsync([...Images, PlaceholderImage, require('./background.jpg') ]);
+      await Asset.loadAsync([...Images, PlaceholderImage, BackgroundImage ]);
       console.log("cached images");
     } catch (e) {
       console.log(`Image Matching failed to load assets.
@@ -88,18 +88,13 @@ export default class ImageMatching extends Component {
     const { screen, currentLevelID, levels } = this.state;
     if (screen === 'menu') {
       return (
-        <Fragment>
-          <ImageBackground style={styles.backgroundImage} source={require('./background.jpg')}>
-            <View style={styles.backgroundImageOverlay} />
-          </ImageBackground>
-          <GameMenu
-            levels={levels}
-            currentLevelID={currentLevelID}
-            playGame={this._playGame}
-            chooseLevel={this._chooseLevel}
-            navigation={this.props.navigation}
-          />
-        </Fragment>
+        <GameMenu
+          levels={levels}
+          currentLevelID={currentLevelID}
+          playGame={this._playGame}
+          chooseLevel={this._chooseLevel}
+          navigation={this.props.navigation}
+        />
       );
     } else {
       return (
@@ -134,19 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgb(43,151,219)',
-  },
-  backgroundImageOverlay: {
-    position: 'absolute',
-    flex: 1,
-    height: '100%',
-    width: '100%',
-    backgroundColor: 'black',
-    opacity: 0.2,
-  },
-  backgroundImage: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
+    backgroundColor: '#c05649',
   },
 });
