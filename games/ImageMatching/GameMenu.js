@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, Picker, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Picker, ImageBackground } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import FlipCard from './FlipCard';
+import LevelCard from './LevelCard';
 import { BackgroundImage } from './Images';
 
 export default class GameMenu extends Component {
@@ -22,9 +23,13 @@ export default class GameMenu extends Component {
             <View style={styles.levelSelectorContainer}>
               { levels.map((level, i) => {
                 return (
-                  <TouchableOpacity key={i} onPress={() => chooseLevel(level.id)} style={{ flexBasis: '30%', margin: 10 }}>
-                    <Icon type='material-community' size={100} name={`numeric-${level.id}-box-outline`} color="#c05649" />
-                  </TouchableOpacity>
+                  <LevelCard
+                    key={i}
+                    onPress={chooseLevel}
+                    numCards={level.numRows * level.numCols}
+                    levelID={level.id}
+                    selected={currentLevelID === level.id}
+                  />
                 );
               })}
             </View>
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 50,
-    marginTop: 100,
+    marginTop: 80,
   },
   button: {
     marginTop: 5,
