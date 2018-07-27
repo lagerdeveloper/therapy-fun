@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-native-elements';
 
-export default class GameControls extends Component {
+export default class BoardControls extends Component {
   render() {
     const { currentLevelID, goToMenu } = this.props;
     return (
       <Header
         innerContainerStyles={{ marginTop: 10 }}
-        outerContainerStyles={{ backgroundColor: '#c05649' }}
+        outerContainerStyles={{ backgroundColor: '#d1594b' }}
         leftComponent={<LeftComponent goToMenu={goToMenu} />}
         centerComponent={<CenterComponent currentLevelID={currentLevelID} />}
       />
@@ -19,8 +19,9 @@ export default class GameControls extends Component {
 
 const LeftComponent = (props) => {
   return (
-    <TouchableOpacity onPress={props.goToMenu}>
+    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={props.goToMenu}>
       <Ionicons name='md-home' color='white' size={24} />
+      <Text style={{ marginLeft: 5, color: 'white' }}>Menu</Text>
     </TouchableOpacity>
   );
 };

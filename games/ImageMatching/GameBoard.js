@@ -1,9 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements';
-import GameControls from './GameControls';
+import BoardControls from './BoardControls';
 import { Images, PlaceholderImage } from './Images';
 import { ImageCard, Card } from './ImageCard';
+import { PRIMARY_COLOR, SECONDARY_COLOR } from './Colors';
 
 export default class GameBoard extends Component {
   constructor(props) {
@@ -11,6 +13,7 @@ export default class GameBoard extends Component {
     this.onLayoutChange = this.onLayoutChange.bind(this);
     this.onImageCardPress = this.onImageCardPress.bind(this);
     this.playNextLevel = this.playNextLevel.bind(this);
+    this.closeCompleteDialog = this.closeCompleteDialog.bind(this);
     const cards = GameBoard._buildCards(this.props.currentLevel);
     this.state = {
       currentLevel: this.props.currentLevel,
@@ -139,6 +142,13 @@ export default class GameBoard extends Component {
     clearTimeout(this.state.showCompleteTimer);
   }
 
+  closeCompleteDialog() {
+    this.setState(prevState => ({
+      ...prevState,
+      showCompleteDialog: false,
+    }));
+  }
+
   render() {
     const { cellHeight, cellWidth, cellMargin, cards, matchedCards, showCompleteDialog, currentLevel } = this.state;
     const { goToMenu } = this.props;
@@ -146,16 +156,17 @@ export default class GameBoard extends Component {
       height: cellHeight,
       width: cellWidth,
       margin: cellMargin,
-      backgroundColor: 'black',
+      borderRadius: 10,
     };
     const imageStyle = {
       height: cellHeight,
       width: cellWidth,
       flex: 1,
+      borderRadius: 10,
     };
     return (
       <Fragment>
-        <GameControls currentLevelID={currentLevel.id} goToMenu={goToMenu} />
+        <BoardControls currentLevelID={currentLevel.id} goToMenu={goToMenu} />
         <View style={styles.boardGridContainer} onLayout={this.onLayoutChange}>
           { cards.map(card =>
             <ImageCard
@@ -174,10 +185,13 @@ export default class GameBoard extends Component {
             <View style={styles.completionOverlay} />
             <View style={styles.completionDialogContainer}>
               <View style={styles.completionDialog}>
+                <TouchableOpacity style={styles.closeIcon} onPress={this.closeCompleteDialog}>
+                  <Ionicons name='ios-close-circle' color="black" size={40} />
+                </TouchableOpacity>
                 <Text style={styles.completionDialogTitle}>Level {currentLevel.id} Complete</Text>
                 <View style={styles.completionDialogButtonsContainer}>
-                  <Button containerViewStyle={styles.button} backgroundColor="#c05649" title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
-                  <Button containerViewStyle={styles.button} backgroundColor="#607a8c" title="Menu" onPress={goToMenu} />
+                  <Button containerViewStyle={styles.button} backgroundColor={PRIMARY_COLOR} title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
+                  <Button containerViewStyle={styles.button} backgroundColor={SECONDARY_COLOR} title="Menu" onPress={goToMenu} />
                 </View>
               </View>
             </View>
@@ -275,5 +289,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: '80%',
     height: 50,
+  },
+  closeIcon: {
+    zIndex: 1,
+    position: 'absolute',
+    top: -10,
+    right: -10,
   }
 });
