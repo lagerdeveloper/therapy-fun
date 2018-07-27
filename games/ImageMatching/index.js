@@ -47,7 +47,10 @@ export default class ImageMatching extends Component {
     this._goToMenu = this._goToMenu.bind(this);
     this._chooseLevel = this._chooseLevel.bind(this);
     this.renderGame = this.renderGame.bind(this);
+    this.completeLevel = this.completeLevel.bind(this);
+    //completedLevelIDS would need to come from database (redux)
     this.state = {
+      completedLevelIDS: [1],
       isGameReady: false,
       screen: 'menu',
       currentLevelID: 1,
@@ -67,6 +70,17 @@ export default class ImageMatching extends Component {
     this.setState({ currentLevelID: levelID });
   }
 
+  completeLevel(levelID) {
+    this.setState(prevState => {
+      const { completedLevelIDS, ...rest } = prevState;
+      console.log(`Completed Levels: ${completedLevelIDS}`);
+      return {
+        ...rest,
+        completedLevelIDS: [...completedLevelIDS, levelID],
+      };
+    });
+  }
+
   _loadResourcesAsync = async() => {
     try {
       await Asset.loadAsync([...Images, PlaceholderImage, BackgroundImage ]);
@@ -74,7 +88,7 @@ export default class ImageMatching extends Component {
     } catch (e) {
       console.log(`Image Matching failed to load assets.
                    The game will proceed without cached assets. Please check index.js.`);
-      consol.log(e);
+      console.log(e);
     } finally {
       this.setState({ isGameReady: true });
     }
@@ -85,12 +99,13 @@ export default class ImageMatching extends Component {
   }
 
   renderGame() {
-    const { screen, currentLevelID, levels } = this.state;
+    const { screen, currentLevelID, levels, completedLevelIDS } = this.state;
     if (screen === 'menu') {
       return (
         <GameMenu
           levels={levels}
           currentLevelID={currentLevelID}
+          completedLevelIDS={completedLevelIDS}
           playGame={this._playGame}
           chooseLevel={this._chooseLevel}
           navigation={this.props.navigation}
@@ -103,6 +118,7 @@ export default class ImageMatching extends Component {
           numLevels={levels.length}
           goToMenu={this._goToMenu}
           chooseLevel={this._chooseLevel}
+          completeLevel={this.completeLevel}
           navigation={this.props.navigation}
         />
       );

@@ -30,7 +30,7 @@ export default class GameMenu extends Component {
   }
 
   render() {
-    const { currentLevelID, chooseLevel, levels, playGame, navigation } = this.props;
+    const { currentLevelID, chooseLevel, levels, playGame, navigation, completedLevelIDS } = this.props;
     const { levelContainerMargin } = this.state;
     return (
       <Fragment>
@@ -45,6 +45,7 @@ export default class GameMenu extends Component {
                 <LevelCard
                   key={i}
                   onPress={chooseLevel}
+                  complete={completedLevelIDS.includes(level.id)}
                   numCards={level.numRows * level.numCols}
                   levelID={level.id}
                   selected={currentLevelID === level.id}

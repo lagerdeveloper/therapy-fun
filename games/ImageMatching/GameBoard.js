@@ -94,8 +94,8 @@ export default class GameBoard extends Component {
 
   //CORE GAME LOGIC
   onImageCardPress(card) {
-    const { selectedCards, matchedCards, preventPresses } = this.state;
-    const { currentLevel: { memTime, numRows, numCols } } = this.props;
+    const { selectedCards, matchedCards, preventPresses, currentLevel } = this.state;
+    const { currentLevel: { memTime, numRows, numCols }, completeLevel } = this.props;
     if (!card.faceUp && !preventPresses) {
       const newSelectedCards = [...selectedCards, card];
       card.faceUp = true;
@@ -104,7 +104,9 @@ export default class GameBoard extends Component {
         if (newSelectedCards[0].imageID === newSelectedCards[1].imageID) {
           // match
           const newMatchedCards = [...matchedCards, ...newSelectedCards];
+          //WIN LEVEL
           if (newMatchedCards.length === numRows * numCols) {
+            completeLevel(currentLevel.id);
             const showCompleteTimer = setTimeout(() => {
               this.setState({ showCompleteDialog: true });
             }, 300);
@@ -151,7 +153,7 @@ export default class GameBoard extends Component {
 
   render() {
     const { cellHeight, cellWidth, cellMargin, cards, matchedCards, showCompleteDialog, currentLevel } = this.state;
-    const { goToMenu } = this.props;
+    const { goToMenu, numLevels } = this.props;
     const gridItemStyle = {
       height: cellHeight,
       width: cellWidth,
@@ -188,9 +190,13 @@ export default class GameBoard extends Component {
                 <TouchableOpacity style={styles.closeIcon} onPress={this.closeCompleteDialog}>
                   <Ionicons name='ios-close-circle' color="black" size={40} />
                 </TouchableOpacity>
-                <Text style={styles.completionDialogTitle}>Level {currentLevel.id} Complete</Text>
+                <Text style={styles.completionDialogTitle}>Level {currentLevel.id}</Text>
+                <View style={styles.completeIconContainer}>
+                  <Ionicons name='md-checkmark-circle' size={60} color='green' />
+                  <Text style={{color: 'green'}}>Complete</Text>
+                </View>
                 <View style={styles.completionDialogButtonsContainer}>
-                  <Button containerViewStyle={styles.button} backgroundColor={PRIMARY_COLOR} title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>
+                  { currentLevel.id < numLevels && <Button containerViewStyle={styles.button} backgroundColor={PRIMARY_COLOR} title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>}
                   <Button containerViewStyle={styles.button} backgroundColor={SECONDARY_COLOR} title="Menu" onPress={goToMenu} />
                 </View>
               </View>
@@ -268,7 +274,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '70%',
+    width: '50%',
     height: '40%',
     backgroundColor: 'white',
     opacity: 1,
@@ -284,6 +290,10 @@ const styles = StyleSheet.create({
   },
   completionDialogTitle: {
     fontSize: 28,
+  },
+  completeIconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     marginTop: 5,

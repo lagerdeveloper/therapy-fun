@@ -21,7 +21,7 @@ const LeftComponent = (props) => {
   return (
     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={props.goToMenu}>
       <Ionicons name='md-home' color='white' size={24} />
-      <Text style={{ marginLeft: 5, color: 'white' }}>Menu</Text>
+      {/* <Text style={{ marginLeft: 5, color: 'white' }}>Menu</Text> */}
     </TouchableOpacity>
   );
 };
