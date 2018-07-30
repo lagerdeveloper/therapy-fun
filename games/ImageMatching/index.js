@@ -55,6 +55,7 @@ export default class ImageMatching extends Component {
       screen: 'menu',
       currentLevelID: 1,
       levels: levels,
+      playGameTimer: null,
     }
   }
 
@@ -68,6 +69,8 @@ export default class ImageMatching extends Component {
 
   _chooseLevel(levelID) {
     this.setState({ currentLevelID: levelID });
+    const playGameTimer = setTimeout(() => this._playGame(), 250);
+    this.setState({ playGameTimer });
   }
 
   completeLevel(levelID) {
@@ -96,6 +99,10 @@ export default class ImageMatching extends Component {
 
   componentDidMount() {
     this._loadResourcesAsync();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.playGameTimer);
   }
 
   renderGame() {

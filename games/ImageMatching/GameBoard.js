@@ -13,7 +13,6 @@ export default class GameBoard extends Component {
     this.onLayoutChange = this.onLayoutChange.bind(this);
     this.onImageCardPress = this.onImageCardPress.bind(this);
     this.playNextLevel = this.playNextLevel.bind(this);
-    this.closeCompleteDialog = this.closeCompleteDialog.bind(this);
     const cards = GameBoard._buildCards(this.props.currentLevel);
     this.state = {
       currentLevel: this.props.currentLevel,
@@ -144,13 +143,6 @@ export default class GameBoard extends Component {
     clearTimeout(this.state.showCompleteTimer);
   }
 
-  closeCompleteDialog() {
-    this.setState(prevState => ({
-      ...prevState,
-      showCompleteDialog: false,
-    }));
-  }
-
   render() {
     const { cellHeight, cellWidth, cellMargin, cards, matchedCards, showCompleteDialog, currentLevel } = this.state;
     const { goToMenu, numLevels } = this.props;
@@ -187,9 +179,6 @@ export default class GameBoard extends Component {
             <View style={styles.completionOverlay} />
             <View style={styles.completionDialogContainer}>
               <View style={styles.completionDialog}>
-                <TouchableOpacity style={styles.closeIcon} onPress={this.closeCompleteDialog}>
-                  <Ionicons name='ios-close-circle' color="black" size={40} />
-                </TouchableOpacity>
                 <Text style={styles.completionDialogTitle}>Level {currentLevel.id}</Text>
                 <View style={styles.completeIconContainer}>
                   <Ionicons name='md-checkmark-circle' size={60} color='green' />
@@ -274,8 +263,8 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '50%',
-    height: '40%',
+    width: 350,
+    height: 300,
     backgroundColor: 'white',
     opacity: 1,
     shadowOffset: { width: -3, height: 3 },
@@ -300,10 +289,4 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 50,
   },
-  closeIcon: {
-    zIndex: 1,
-    position: 'absolute',
-    top: -10,
-    right: -10,
-  }
 });

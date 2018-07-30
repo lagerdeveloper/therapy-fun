@@ -6,7 +6,9 @@ import {
   Picker,
   ImageBackground,
   ScrollView,
+  TouchableOpacity,
  } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Icon } from 'react-native-elements';
 import FlipCard from './FlipCard';
 import LevelCard from './LevelCard';
@@ -37,7 +39,11 @@ export default class GameMenu extends Component {
         <ImageBackground style={styles.backgroundImage} source={BackgroundImage}>
           <View style={styles.backgroundImageOverlay} />
         </ImageBackground>
-        <ScrollView onLayout={this.onMenuLayoutChange} contentContainerStyle={styles.menuContainer}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+          <View style={styles.closeIconContainer} />
+          <MaterialCommunityIcons style={styles.closeIcon} name='close' size={40} color='white' />
+        </TouchableOpacity>
+        <ScrollView onLayout={this.onMenuLayoutChange}>
           <Text style={styles.gameTitle}>Image Matching</Text>
           <View onLayout={this.onLayoutChange} style={[styles.levelSelectorContainer, { marginLeft: levelContainerMargin, marginRight: levelContainerMargin }]}>
             { levels.map((level, i) => {
@@ -53,20 +59,6 @@ export default class GameMenu extends Component {
               );
             })}
           </View>
-          {/* <View style={{ width: '80%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D0D0D0' }}>
-            <Text style={styles.pickerLabel}>Select Level</Text>
-          </View> */}
-          {/* <Picker
-            selectedValue={currentLevelID}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-            onValueChange={levelID => chooseLevel(levelID)}>
-            { levels.map((level, i) => <Picker.Item key={i} label={`${level.id}`} value={level.id} />) }
-          </Picker> */}
-          <View style={styles.buttonContainer}>
-            <Button raised containerViewStyle={styles.button} backgroundColor={PRIMARY_COLOR} title={`Play Level ${currentLevelID}`} onPress={playGame}/>
-            <Button raised containerViewStyle={styles.button} backgroundColor={SECONDARY_COLOR} title="Exit" onPress={() => navigation.goBack()} />
-          </View>
         </ScrollView>
       </Fragment>
     );
@@ -74,15 +66,6 @@ export default class GameMenu extends Component {
 }
 
 const styles = StyleSheet.create({
-  menuContainer: {
-    flex: 1,
-    justifyContent: 'space-around'
-  },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   gameTitle: {
     textAlign: 'center',
     textShadowOffset: { width: 1, height: 1 },
@@ -92,25 +75,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 50,
-  },
-  button: {
-    marginTop: 5,
-    width: '80%',
-    height: 50,
-  },
-  picker: {
-    height: 100,
-    width: '80%',
-    backgroundColor: '#fff',
-    borderColor: 'black',
-  },
-  pickerLabel: {
-    fontSize: 20,
-  },
-  pickerItem: {
-    height: 100,
-    borderTopWidth: 1,
-    borderColor: 'black',
+    marginTop: 60,
   },
   backgroundImageOverlay: {
     position: 'absolute',
@@ -130,7 +95,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
+    marginTop: 100,
+    marginBottom: 'auto',
     marginLeft: 50,
     marginRight: 50,
   },
+  closeIconContainer: {
+    position: 'absolute',
+    top: 25,
+    right: 20,
+    margin: 'auto',
+    backgroundColor: 'black',
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    opacity: 0.4,
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 25,
+    right: 20,
+    margin: 'auto',
+  },
+  closeButton: {
+    zIndex: 5,
+  }
 });

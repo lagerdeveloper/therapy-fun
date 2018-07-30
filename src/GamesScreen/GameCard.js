@@ -18,7 +18,7 @@ export default GameCard = (props) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 350,
+    width: 325,
     borderWidth: 1,
     borderColor: '#edeeef',
     backgroundColor: 'white',

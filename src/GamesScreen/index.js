@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import games from '../../games';
 import GameCard from './GameCard';
 
@@ -11,19 +11,21 @@ export default class GamesScreen extends Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={styles.container}>
-        {/* <Button
-          onPress={() => navigate('Game')}
-          title="Game Screen"
-        /> */}
-        { games.map((game, i) =>
-          <GameCard
-            key={i}
-            onPress={() => navigate('Game', { id: game.id })}
-            game={game}
-          />
-        )}
-      </View>
+      <ScrollView>
+        <View style={styles.container}>
+          {/* <Button
+            onPress={() => navigate('Game')}
+            title="Game Screen"
+          /> */}
+          { games.map((game, i) =>
+            <GameCard
+              key={i}
+              onPress={() => navigate('Game', { id: game.id })}
+              game={game}
+            />
+          )}
+        </View>
+      </ScrollView>
     );
   }
 }
