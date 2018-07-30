@@ -13,7 +13,7 @@ const games = [
     id: 2,
     name: 'Image Matching',
     category: 'Visual Memory',
-    image_source: require('./ImageMatching/face-matching.jpg'),
+    image_source: require('./ImageMatching/Images/background.jpg'),
     game: ImageMatching,
   },
 ];

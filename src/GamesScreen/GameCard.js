@@ -19,8 +19,6 @@ export default GameCard = (props) => {
 const styles = StyleSheet.create({
   card: {
     width: 325,
-    borderWidth: 1,
-    borderColor: '#edeeef',
     backgroundColor: 'white',
     marginBottom: 10,
     height: 200,
@@ -30,7 +28,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   image: {
-    width: 350,
+    width: 325,
     height: 200,
   }
 });
