@@ -8,7 +8,7 @@ class GameWrapper extends Component {
     const { getParam } = navigation;
     const gameId = getParam('id', 1);
     const GameComponent = games[gameId].game;
-    return <GameComponent navigation={navigation} />;
+    return <GameComponent id={gameId} navigation={navigation} />;
   }
 }
 

@@ -15,10 +15,6 @@ class GamesScreen extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          {/* <Button
-            onPress={() => navigate('Game')}
-            title="Game Screen"
-          /> */}
           { gameIDS.map((gameID, i) =>
             <GameCard
               key={i}

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
 import { View, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
 import { Asset } from 'expo';
 import GameBoard from './GameBoard';
@@ -7,40 +8,8 @@ import { Images, PlaceholderImage, BackgroundImage } from './Images';
 
 //NOTE these levels will be extracted from ajax request or redux store
 //NOTE use DifficultyLevel class to represent the value objects
-const levels = [
-  {
-    id: 1,
-    numRows: 2,
-    numCols: 3,
-    memTime: 2000,
-  },
-  {
-    id: 2,
-    numRows: 2,
-    numCols: 3,
-    memTime: 1500,
-  },
-  {
-    id: 3,
-    numRows: 3,
-    numCols: 4,
-    memTime: 1000,
-  },
-  {
-    id: 4,
-    numRows: 3,
-    numCols: 4,
-    memTime: 750,
-  },
-  {
-    id: 5,
-    numRows: 4,
-    numCols: 4,
-    memTime: 500,
-  }
-];
 
-export default class ImageMatching extends Component {
+class ImageMatching extends Component {
   constructor(props) {
     super(props);
     this._playGame = this._playGame.bind(this);
@@ -48,13 +17,14 @@ export default class ImageMatching extends Component {
     this._chooseLevel = this._chooseLevel.bind(this);
     this.renderGame = this.renderGame.bind(this);
     this.completeLevel = this.completeLevel.bind(this);
+    this._loadLevelData = this._loadLevelData.bind(this);
     //completedLevelIDS would need to come from database (redux)
     this.state = {
       completedLevelIDS: [1],
       isGameReady: false,
       screen: 'menu',
       currentLevelID: 1,
-      levels: levels,
+      levels: [],
       playGameTimer: null,
     }
   }
@@ -92,13 +62,24 @@ export default class ImageMatching extends Component {
       console.log(`Image Matching failed to load assets.
                    The game will proceed without cached assets. Please check index.js.`);
       console.log(e);
-    } finally {
-      this.setState({ isGameReady: true });
+    }
+  }
+
+  //TODO this will need to make an ajax request to get level information
+  //TODO first check if this.props.gameLevels[this.props.id] exists already
+  //TODO implement error handling if ajax request fails
+  _loadLevelData = async() => {
+    if (this.props.gameLevels.hasOwnProperty(this.props.id)) {
+      this.setState({ levels: this.props.gameLevels[this.props.id], isGameReady: true });
+    } else {
+      // Logic for ajax request will go here
+      setTimeout(() => this.setState({ levels: this.props.gameLevels[this.props.id], isGameReady: true }), 1000);
     }
   }
 
   componentDidMount() {
     this._loadResourcesAsync();
+    this._loadLevelData();
   }
 
   componentWillUnmount() {
@@ -145,6 +126,8 @@ export default class ImageMatching extends Component {
     }
   }
 };
+
+export default connect(state => ({ gameLevels: state.gameLevels }), null)(ImageMatching);
 
 
 const styles = StyleSheet.create({
