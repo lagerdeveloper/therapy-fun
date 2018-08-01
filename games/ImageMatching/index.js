@@ -18,7 +18,7 @@ class ImageMatching extends Component {
     this.renderGame = this.renderGame.bind(this);
     this.completeLevel = this.completeLevel.bind(this);
     this._loadLevelData = this._loadLevelData.bind(this);
-    //completedLevelIDS would need to come from database (redux)
+    //completedLevelIDS would need to come from database (redux will manage this data)
     this.state = {
       completedLevelIDS: [1],
       isGameReady: false,
@@ -94,7 +94,6 @@ class ImageMatching extends Component {
           levels={levels}
           currentLevelID={currentLevelID}
           completedLevelIDS={completedLevelIDS}
-          playGame={this._playGame}
           chooseLevel={this._chooseLevel}
           navigation={this.props.navigation}
         />
