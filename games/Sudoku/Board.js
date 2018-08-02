@@ -3,39 +3,103 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements';
 import BoardControls from './BoardControls';
-import { Tile, TileComponent } from './Tile';
+import { Tile, PuzzleTile, PlacementTile } from './Tile';
+import { SECONDARY_COLOR, PRIMARY_COLOR } from './Colors';
 
 
 export default class Board extends Component {
   constructor(props) {
     super(props);
-    this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.puzzleTilesLayoutChange = this.puzzleTilesLayoutChange.bind(this);
+    this.placementTilesLayoutChange = this.placementTilesLayoutChange.bind(this);
+    this.onPuzzleTilePress = this.onPuzzleTilePress.bind(this);
+    this.onPlacementTilePress = this.onPlacementTilePress.bind(this);
+    this.highlightApplicableBoardPaths = this.highlightApplicableBoardPaths.bind(this);
+    this.playNextLevel = this.playNextLevel.bind(this);
     const { currentLevel } = this.props;
-    const { n, rowMultiplier, colMultiplier } = Board._calcMultipliers(currentLevel);
-    const tiles = Board._createPuzzleTiles(currentLevel.puzzleStr, n);
+    const { n, rowMultiplier, colMultiplier } = Board._calcDimensions(currentLevel);
+    const puzzleTiles = Board._createPuzzleTiles(currentLevel.puzzleStr, n, rowMultiplier, colMultiplier);
+    const placementTiles = Board._createPlacementTiles(n)
     this.state = {
       currentLevel: currentLevel,
       n,
       rowMultiplier,
       colMultiplier,
-      gridHeight: 0,
-      gridWidth: 0,
+      boardHeight: 0,
+      boardWidth: 0,
       tileHeight: 0,
       tileWidth: 0,
-      tiles,
+      placementGridHeight: 0,
+      placementGridWidth: 0,
+      placementTileHeight: 0,
+      placementTileWidth: 0,
+      puzzleTiles,
+      placementTiles,
+      selectedPuzzleTile: null,
+      lastCorrectTile: null,
+      incorrectPuzzleTiles: [],
+      highlightTileIDS: [],
+      showCompleteDialog: false,
     };
   }
 
-  static _createPuzzleTiles(puzzleStr, n) {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { currentLevel } = nextProps;
+    if (currentLevel !== prevState.currentLevel) {
+      const { placementGridHeight, placementGridWidth, boardHeight, boardWidth } = prevState;
+      const { n, rowMultiplier, colMultiplier } = Board._calcDimensions(currentLevel);
+      const { tileHeight, tileWidth } = Board._getTileDimensions(boardHeight, boardWidth, n);
+      const { placementTileWidth, placementTileHeight } = Board._getPlacementTileDimensions(placementGridHeight, placementGridWidth, n);
+      const puzzleTiles = Board._createPuzzleTiles(currentLevel.puzzleStr, n, rowMultiplier, colMultiplier);
+      const placementTiles = Board._createPlacementTiles(n)
+      return {
+        currentLevel: currentLevel,
+        n,
+        rowMultiplier,
+        colMultiplier,
+        boardHeight,
+        boardWidth,
+        tileHeight,
+        tileWidth,
+        placementGridHeight,
+        placementGridWidth,
+        placementTileHeight,
+        placementTileWidth,
+        puzzleTiles,
+        placementTiles,
+        selectedPuzzleTile: null,
+        lastCorrectTile: null,
+        incorrectPuzzleTiles: [],
+        highlightTileIDS: [],
+        showCompleteDialog: false,
+      };
+    }
+    return null;
+  }
+
+  static _createPuzzleTiles(puzzleStr, n, rowMultiplier, colMultiplier) {
     let tiles = [];
     for (let i = 0; i < puzzleStr.length / 2; i++) {
       const id = i;
-      const title = puzzleStr.substring(i * 2, (i * 2) + 2);
+      const tileStr = puzzleStr.substring(i * 2, (i * 2) + 2);
       const rowID = Math.floor(id / n);
       const colID = id % n;
-      const number = parseInt(title.charAt(1));
-      const visible = title.charAt(0) === '+';
-      tiles.push(new Tile(id, title, number, visible, rowID, colID));
+      const squareRow = Math.floor(rowID / rowMultiplier);
+      const squareCol = Math.floor(colID / colMultiplier);
+      const square = `${squareRow}x${squareCol}`;
+      const number = parseInt(tileStr.charAt(1));
+      const visible = tileStr.charAt(0) === '+';
+      tiles.push(new Tile(id, number, visible, rowID, colID, square));
+    }
+    return tiles;
+  }
+
+  static _createPlacementTiles(n) {
+    let tiles = [];
+    for (let i = 0; i < n; i++) {
+      const id = Math.pow(n, 2) + i;
+      const number = i + 1;
+      tiles.push(new Tile(id, number, true));
     }
     return tiles;
   }
@@ -46,7 +110,13 @@ export default class Board extends Component {
     return { tileWidth, tileHeight };
   }
 
-  static _calcMultipliers(currentLevel) {
+  static _getPlacementTileDimensions(placementGridHeight, placementGridWidth, n) {
+    const placementTileWidth = Math.floor(placementGridWidth / n);
+    const placementTileHeight = placementGridHeight;
+    return { placementTileWidth, placementTileHeight };
+  }
+
+  static _calcDimensions(currentLevel) {
     const { puzzleStr, numRows, numCols } = currentLevel;
     const n = Math.sqrt(puzzleStr.length / 2);
     const rowMultiplier = n / numRows;
@@ -54,21 +124,100 @@ export default class Board extends Component {
     return { n, rowMultiplier, colMultiplier };
   }
 
-  onLayoutChange({ nativeEvent }) {
+  puzzleTilesLayoutChange({ nativeEvent }) {
     const { layout: { width, height } } = nativeEvent;
     const { tileWidth, tileHeight } = Board._getTileDimensions(height, width, this.state.n);
     console.log(`Tile Width: ${tileWidth}, Tile Height: ${tileHeight}`);
     this.setState({
-      gridHeight: height,
-      gridWidth: width,
+      boardHeight: height,
+      boardWidth: width,
       tileHeight,
       tileWidth,
     });
   }
 
+  placementTilesLayoutChange({ nativeEvent }) {
+    const { n } = this.state;
+    const { layout: { width, height } } = nativeEvent;
+    const { placementTileWidth, placementTileHeight } = Board._getPlacementTileDimensions(height, width, n);
+    this.setState({
+      placementGridHeight: height,
+      placementGridWidth: width,
+      placementTileHeight,
+      placementTileWidth,
+    });
+  }
+
+  onPuzzleTilePress(tile) {
+    this.highlightApplicableBoardPaths(tile);
+    this.setState({ selectedPuzzleTile: tile, lastCorrectTile: null });
+  }
+
+  //CORE GAME LOGIC
+  onPlacementTilePress(tile) {
+    console.log(tile.number);
+    const { selectedPuzzleTile, puzzleTiles, incorrectPuzzleTiles } = this.state;
+    if (selectedPuzzleTile && !selectedPuzzleTile.visible) {
+      if (tile.number === selectedPuzzleTile.number) {
+        //Correct
+        selectedPuzzleTile.visible = true;
+        const newIncorrectTiles = incorrectPuzzleTiles.filter(ipt => ipt.tile !== selectedPuzzleTile);
+        this.setState({ lastCorrectTile: selectedPuzzleTile, incorrectPuzzleTiles: newIncorrectTiles });
+        if (puzzleTiles.every(puzzleTile => puzzleTile.visible)) {
+          this.setState({ showCompleteDialog: true });
+        }
+      } else {
+        //Incorrect
+        let incorrectTile = { number: tile.number, tile: selectedPuzzleTile };
+        if (incorrectPuzzleTiles.find(ipt => ipt.tile === incorrectTile.tile)) {
+          let newIncorrectTiles = incorrectPuzzleTiles.filter(ipt => ipt.tile !== incorrectTile.tile);
+          console.log(newIncorrectTiles);
+          console.log(incorrectTile);
+          this.setState({ incorrectPuzzleTiles: [...newIncorrectTiles, incorrectTile ] });
+        } else {
+          this.setState({ incorrectPuzzleTiles: [...incorrectPuzzleTiles, incorrectTile ] });
+        }
+      }
+    }
+  }
+
+  highlightApplicableBoardPaths(tile) {
+    const { puzzleTiles } = this.state;
+    const puzzleTilesToHighlight = puzzleTiles.filter(t => {
+      return t.square === tile.square || t.colID === tile.colID || t.rowID === tile.rowID;
+    });
+    this.setState({ highlightTileIDS: puzzleTilesToHighlight.map(pt => pt.id) });
+  }
+
+  playNextLevel() {
+    const { chooseLevel, numLevels } = this.props;
+    const { currentLevel } = this.state;
+    const newLevelID = currentLevel.id + 1;
+    if (newLevelID <= numLevels) {
+      chooseLevel(newLevelID);
+    }
+    this.setState({ showCompleteDialog: false });
+  }
+
   render() {
-    const { tiles, tileWidth, tileHeight, rowMultiplier, colMultiplier, n } = this.state;
-    const { goToMenu, currentLevel } = this.props;
+    const {
+      puzzleTiles,
+      placementTiles,
+      tileWidth,
+      tileHeight,
+      placementTileWidth,
+      placementTileHeight,
+      rowMultiplier,
+      colMultiplier,
+      n,
+      selectedPuzzleTile,
+      lastCorrectTile,
+      incorrectPuzzleTiles,
+      highlightTileIDS,
+      currentLevel,
+      showCompleteDialog,
+    } = this.state;
+    const { goToMenu, numLevels } = this.props;
     const tileStyle = {
       width: tileWidth,
       height: tileHeight,
@@ -83,34 +232,60 @@ export default class Board extends Component {
       justifyContent: 'center',
       alignItems: 'center',
     };
+    const placementTileStyle = {
+      width: placementTileWidth,
+      height: placementTileHeight,
+      justifyContent: 'center',
+      alignItems: 'center',
+    };
     return (
       <Fragment>
         <BoardControls currentLevelID={currentLevel.id} goToMenu={goToMenu} />
-        <View style={styles.boardGridContainer} onLayout={this.onLayoutChange}>
-          { tiles.map((tile, i) => (
-            <TileComponent
+        <View style={styles.boardGridContainer} onLayout={this.puzzleTilesLayoutChange}>
+          { puzzleTiles.map((puzzleTile, i) => (
+            <PuzzleTile
               key={i}
-              tile={tile}
+              tile={puzzleTile}
               tileStyle={tileStyle}
+              onPress={this.onPuzzleTilePress}
               n={n}
               rowMultiplier={rowMultiplier}
               colMultiplier={colMultiplier}
+              selected={selectedPuzzleTile === puzzleTile}
+              highlight={highlightTileIDS.includes(puzzleTile.id)}
+              incorrectTile={incorrectPuzzleTiles.find(inco => inco.tile === puzzleTile)}
+              correct={lastCorrectTile === puzzleTile}
             />
           ))}
-          {/* { cards.map(card =>
-            <ImageCard
-              onPress={this.onImageCardPress}
-              placeholderImage={PlaceholderImage}
-              imageStyle={imageStyle}
-              cardContainerStyle={gridItemStyle}
-              card={card}
-              key={card.id}
-              imageToMemorize={Images[card.imageID]}
-              matched={matchedCards.includes(card)}
-            />)} */}
         </View>
-        <View style={styles.gameControlsContainer}>
+        <View style={styles.placementTilesContainer} onLayout={this.placementTilesLayoutChange}>
+          { placementTiles.map((placementTile, i) => (
+            <PlacementTile
+              key={i}
+              tile={placementTile}
+              tileStyle={placementTileStyle}
+              onPress={this.onPlacementTilePress}
+            />
+          ))}
         </View>
+        { showCompleteDialog &&
+          <Fragment>
+            <View style={styles.completionOverlay} />
+            <View style={styles.completionDialogContainer}>
+              <View style={styles.completionDialog}>
+                <Text style={styles.completionDialogTitle}>Level {currentLevel.id}</Text>
+                <View style={styles.completeIconContainer}>
+                  <Ionicons name='md-checkmark-circle' size={60} color='green' />
+                  <Text style={{color: 'green'}}>Complete</Text>
+                </View>
+                <View style={styles.completionDialogButtonsContainer}>
+                  { currentLevel.id < numLevels && <Button containerViewStyle={styles.button} backgroundColor={PRIMARY_COLOR} title={`Play Level ${currentLevel.id + 1}`} onPress={this.playNextLevel}/>}
+                  <Button containerViewStyle={styles.button} backgroundColor={SECONDARY_COLOR} title="Menu" onPress={goToMenu} />
+                </View>
+              </View>
+            </View>
+          </Fragment>
+        }
       </Fragment>
     );
   }
@@ -123,21 +298,19 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     marginLeft: 10,
     marginRight: 10,
-    flex: 1,
+    flex: 3,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    height: '85%',
     alignItems: 'stretch',
   },
-  gameControlsContainer: {
-    padding: 10,
-    width: '100%',
-    height: '15%',
-  },
-  image: {
+  placementTilesContainer: {
+    marginTop: 20,
     flex: 1,
-    height: undefined,
-    width: undefined,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   completionOverlay: {
     flex: 1,
