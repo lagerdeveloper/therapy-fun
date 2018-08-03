@@ -13,6 +13,7 @@ export default class GameBoard extends Component {
     this.onLayoutChange = this.onLayoutChange.bind(this);
     this.onImageCardPress = this.onImageCardPress.bind(this);
     this.playNextLevel = this.playNextLevel.bind(this);
+    this.takeTurn = this.takeTurn.bind(this);
     const cards = GameBoard._buildCards(this.props.currentLevel);
     this.state = {
       currentLevel: this.props.currentLevel,
@@ -90,6 +91,14 @@ export default class GameBoard extends Component {
     });
   }
 
+  takeTurn(selectedCards) {
+    if (selectedCards[0].imageID == selectedCards[1].imageID) {
+      //this.matchFound()
+    } else {
+      //this.matchNotFound()
+    }
+  }
+
 
   //CORE GAME LOGIC
   onImageCardPress(card) {
@@ -99,6 +108,7 @@ export default class GameBoard extends Component {
       const newSelectedCards = [...selectedCards, card];
       card.faceUp = true;
       if (newSelectedCards.length === 2) {
+        //this.takeTurn(newSelectedCards)
         //TODO add turn event
         if (newSelectedCards[0].imageID === newSelectedCards[1].imageID) {
           // match

@@ -11,9 +11,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Icon } from 'react-native-elements';
 import LevelCard from './LevelCard';
 import { BackgroundImage } from './Images';
-import { PRIMARY_COLOR, SECONDARY_COLOR } from './Colors';
 
-export default class GameMenu extends Component {
+export default class Menu extends Component {
   constructor(props) {
     super(props);
     this.onMenuLayoutChange = this.onMenuLayoutChange.bind(this);
@@ -42,7 +41,7 @@ export default class GameMenu extends Component {
           <MaterialCommunityIcons style={styles.closeIcon} name='close' size={40} color='white' />
         </TouchableOpacity>
         <ScrollView onLayout={this.onMenuLayoutChange}>
-          <Text style={styles.gameTitle}>Image Matching</Text>
+          <Text style={styles.gameTitle}>Sudoku</Text>
           <View onLayout={this.onLayoutChange} style={[styles.levelSelectorContainer, { marginLeft: levelContainerMargin, marginRight: levelContainerMargin }]}>
             { levels.map((level, i) => {
               return (
@@ -50,7 +49,7 @@ export default class GameMenu extends Component {
                   key={i}
                   onPress={chooseLevel}
                   complete={completedLevelIDS.includes(level.id)}
-                  numCards={level.numRows * level.numCols}
+                  subtitle={`${level.numRows}x${level.numCols}`}
                   levelID={level.id}
                   selected={currentLevelID === level.id}
                 />

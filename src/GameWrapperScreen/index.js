@@ -7,8 +7,8 @@ class GameWrapper extends Component {
     const { navigation } = this.props;
     const { getParam } = navigation;
     const gameId = getParam('id', 1);
-    const GameComponent = games.find(game => game.id === gameId).game;
-    return <GameComponent navigation={navigation} />;
+    const GameComponent = games[gameId].game;
+    return <GameComponent id={gameId} navigation={navigation} />;
   }
 }
 
