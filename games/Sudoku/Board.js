@@ -154,7 +154,7 @@ export default class Board extends Component {
 
   //CORE GAME LOGIC
   onPlacementTilePress(tile) {
-    const { selectedPuzzleTile, puzzleTiles, incorrectPuzzleTiles } = this.state;
+    const { selectedPuzzleTile, puzzleTiles, incorrectPuzzleTiles, currentLevel } = this.state;
     if (selectedPuzzleTile && !selectedPuzzleTile.visible) {
       if (tile.number === selectedPuzzleTile.number) {
         //Correct
@@ -162,6 +162,7 @@ export default class Board extends Component {
         const newIncorrectTiles = incorrectPuzzleTiles.filter(ipt => ipt.tile !== selectedPuzzleTile);
         this.setState({ lastCorrectTile: selectedPuzzleTile, incorrectPuzzleTiles: newIncorrectTiles });
         if (puzzleTiles.every(puzzleTile => puzzleTile.visible)) {
+          this.props.completeLevel(currentLevel.id);
           this.setState({ showCompleteDialog: true });
         }
       } else {
