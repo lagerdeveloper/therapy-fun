@@ -127,7 +127,6 @@ export default class Board extends Component {
   puzzleTilesLayoutChange({ nativeEvent }) {
     const { layout: { width, height } } = nativeEvent;
     const { tileWidth, tileHeight } = Board._getTileDimensions(height, width, this.state.n);
-    console.log(`Tile Width: ${tileWidth}, Tile Height: ${tileHeight}`);
     this.setState({
       boardHeight: height,
       boardWidth: width,
@@ -155,7 +154,6 @@ export default class Board extends Component {
 
   //CORE GAME LOGIC
   onPlacementTilePress(tile) {
-    console.log(tile.number);
     const { selectedPuzzleTile, puzzleTiles, incorrectPuzzleTiles } = this.state;
     if (selectedPuzzleTile && !selectedPuzzleTile.visible) {
       if (tile.number === selectedPuzzleTile.number) {
@@ -171,8 +169,6 @@ export default class Board extends Component {
         let incorrectTile = { number: tile.number, tile: selectedPuzzleTile };
         if (incorrectPuzzleTiles.find(ipt => ipt.tile === incorrectTile.tile)) {
           let newIncorrectTiles = incorrectPuzzleTiles.filter(ipt => ipt.tile !== incorrectTile.tile);
-          console.log(newIncorrectTiles);
-          console.log(incorrectTile);
           this.setState({ incorrectPuzzleTiles: [...newIncorrectTiles, incorrectTile ] });
         } else {
           this.setState({ incorrectPuzzleTiles: [...incorrectPuzzleTiles, incorrectTile ] });
@@ -298,7 +294,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     marginLeft: 10,
     marginRight: 10,
-    flex: 3,
+    flex: 6,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'stretch',

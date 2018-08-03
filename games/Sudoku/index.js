@@ -1,9 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
+import { Asset } from 'expo';
 import { Header } from 'react-native-elements';
 import { View, Text, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import Menu from './Menu';
 import Board from './Board';
+import { BackgroundImage } from './Images';
 
 class Sudoku extends Component {
   constructor(props) {
@@ -15,7 +17,7 @@ class Sudoku extends Component {
     this.completeLevel = this.completeLevel.bind(this);
     this.state = {
       completedLevelIDS: [],
-      isGameReady: true,
+      isGameReady: false,
       screen: 'menu',
       currentLevelID: 1,
       levels: [],
@@ -48,7 +50,19 @@ class Sudoku extends Component {
     });
   }
 
+  _loadResourcesAsync = async() => {
+    try {
+      await Asset.loadAsync([ BackgroundImage ]);
+      console.log("cached images");
+    } catch (e) {
+      console.log(`Image Matching failed to load assets.
+                   The game will proceed without cached assets. Please check index.js.`);
+      console.log(e);
+    }
+  }
+
   componentDidMount() {
+    this._loadResourcesAsync();
     const { id, gameLevels } = this.props;
     if (gameLevels.hasOwnProperty(id)) {
       this.setState({ levels: gameLevels[id], isGameReady: true });

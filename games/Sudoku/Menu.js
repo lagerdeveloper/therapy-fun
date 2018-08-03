@@ -10,6 +10,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Icon } from 'react-native-elements';
 import LevelCard from './LevelCard';
+import { BackgroundImage } from './Images';
 
 export default class Menu extends Component {
   constructor(props) {
@@ -32,9 +33,9 @@ export default class Menu extends Component {
     const { levelContainerMargin } = this.state;
     return (
       <Fragment>
-        {/* <ImageBackground style={styles.backgroundImage} source={BackgroundImage}>
+        <ImageBackground style={styles.backgroundImage} source={BackgroundImage}>
           <View style={styles.backgroundImageOverlay} />
-        </ImageBackground> */}
+        </ImageBackground>
         <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
           <View style={styles.closeIconContainer} />
           <MaterialCommunityIcons style={styles.closeIcon} name='close' size={40} color='white' />
